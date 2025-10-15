@@ -525,7 +525,7 @@ Seamless connection with Stacks wallets:
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/murat48/YieldFarming.git
+git clone https://github.com/murat48/StackPulseFi.git
 cd YieldFarming
 ```
 
@@ -595,8 +595,8 @@ npm start
 
 6. **Access the Application**
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
-- API Health: http://localhost:3001/api/health
+- Backend API: https://stackpulsefi-api-latest.onrender.com
+- API Health: https://stackpulsefi-api-latest.onrender.com/api/health
 
 ---
 
