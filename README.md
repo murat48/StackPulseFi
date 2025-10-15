@@ -284,8 +284,6 @@ Long-term savings products for financial goals:
 
 ##### 2. Liquidity Pools Mode 💧
 **Liquidity provision calculator using selected protocol's data:**
-- sBTC/STX pair - Uses selected protocol's APY and liquidity metrics
-- sBTC/USDA pair - Calculates based on protocol's current rates
 - Impermanent loss estimation based on protocol volatility
 - Fee APR calculations from selected protocol
 - LP token value projections using live market data
