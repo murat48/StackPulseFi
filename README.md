@@ -1,5 +1,6 @@
 # StackPulseFi 🚀
-
+<br>
+<img src="/logo.jpg" alt="stackpulsefi" width="400"/><br> <br>
 <div align="center">
 
 ![StackPulseFi Logo](https://img.shields.io/badge/StackPulseFi-Next--Gen%20DeFi-purple?style=for-the-badge)
