@@ -958,9 +958,9 @@ in the Software without restriction...
 ## 📞 Contact & Support
 
 - **Website**: [stackpulsefi.vercel.app](https://stackpulsefi.vercel.app)
-- **GitHub**: [github.com/murat48/YieldFarming](https://github.com/murat48/YieldFarming)
-- **Issues**: [GitHub Issues](https://github.com/murat48/YieldFarming/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/murat48/YieldFarming/discussions)
+- **GitHub**: [github.com/murat48/YieldFarming](https://github.com/murat48/StackPulseFi)
+- **Issues**: [GitHub Issues](https://github.com/murat48/StackPulseFi/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/murat48/StackPulseFi/discussions)
 
 ---
 
