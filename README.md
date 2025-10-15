@@ -51,63 +51,57 @@
 ### 🎯 Problem Statement
 Despite Bitcoin's dominance, over $1 trillion in BTC remains idle — not participating in yield generation, lending, or savings products. Existing DeFi solutions for Bitcoin are:
 
-❌ Fragmented and complex
-❌ Lacking intuitive tools for yield generation
-❌ Missing risk-adjusted investment products
-❌ Absent long-term, goal-based financial planning
+- ❌ Fragmented and complex
+- ❌ Lacking intuitive tools for yield generation
+- ❌ Missing risk-adjusted investment products
+- ❌ Absent long-term, goal-based financial planning
 
 ### 💡 Solution Highlights
 StackPulseFi bridges the gap between traditional Bitcoin holdings and decentralized finance by offering:
 
-🔹 Simple, risk-profile-based staking
-🔹 Automated yield optimization
-🔹 Long-term saving mechanisms
-🔹 AI-driven financial guidance
+- 🔹 Simple, risk-profile-based staking
+- 🔹 Automated yield optimization
+- 🔹 Long-term saving mechanisms
+- 🔹 AI-driven financial guidance
 
 ### 🛠 Technical Architecture
-Blockchain Infrastructure
-Blockchain: Stacks
-Smart Contract Language: Clarity
+- Blockchain Infrastructure
+- Blockchain: Stacks
+- Smart Contract Language: Clarity
 
 **Key Integrations:**
-Bitcoin settlement layer
-sBTC for BTC-backed DeFi
-Stacks.js
-Leather Wallet
+- Bitcoin settlement layer
+- sBTC for BTC-backed DeFi
+- Stacks.js
+- Leather Wallet
 
 ### Technical Stack
 
-Frontend: Next.js
-Blockchain Interaction: Stacks.js
-Smart Contract Development: Clarinet
-AI Advisory: Node.js + OpenAI API
-Deployment:
-
-Frontend: Vercel
-Backend: Render
-
-
+- Frontend: Next.js
+- Blockchain Interaction: Stacks.js
+- Smart Contract Development: Clarinet
+- AI Advisory: Node.js + OpenAI API
 
 ### 🌟 Key Features
 
-Risk-Adjusted Staking
+## Risk-Adjusted Staking
 
-Low, Medium, and High-risk investment profiles
-Automated portfolio rebalancing
+- Low, Medium, and High-risk investment profiles
+- Automated portfolio rebalancing
 
 
 ### AI-Powered Insights
 
-Personalized DeFi strategy recommendations
-Protocol performance comparisons
-Risk assessment tools
+- Personalized DeFi strategy recommendations
+- Protocol performance comparisons
+- Risk assessment tools
 
 
 ### Long-Term Savings
 
-Retirement fund planning
-Education savings strategies
-Goal-based investment tracking
+- Retirement fund planning
+- Education savings strategies
+- Goal-based investment tracking
 
 ---
 
