@@ -93,7 +93,7 @@ StackPulseFi bridges the gap between traditional Bitcoin holdings and decentrali
 
 ### AI-Powered Protocol Analysis
 
-- Real-time data from 80+ DeFi protocols
+- Real-time data from 17+ DeFi protocols
 - Live market metrics (TVL, APY, Volume)
 - Advanced risk assessment with 5-factor analysis
 - Interactive ROI calculator with live protocol data
@@ -113,18 +113,18 @@ StackPulseFi bridges the gap between traditional Bitcoin holdings and decentrali
 ### 1. Staking Pools 🏊‍♂️
 
 Multi-tier staking system with different risk profiles:
-
-- **Conservative Pool** (5% APR)
+- AI-powered multi-tier staking with customizable APR (5–12%), offering real-time rewards, flexible withdrawals, and lock-period protection with early withdrawal penalties—smartly tailored to your risk profile by AI.
+- **Conservative Pool** (5% APR)(possible customizable)
   - Low risk, steady returns
   - Perfect for risk-averse investors
   - Minimal volatility exposure
 
-- **Moderate Pool** (7% APR)
+- **Moderate Pool** (7% APR)(possible customizable)
   - Balanced risk/reward ratio
   - Suitable for average DeFi users
   - Moderate growth potential
 
-- **Aggressive Pool** (12% APR)
+- **Aggressive Pool** (12% APR)(possible customizable)
   - High risk, high reward
   - For experienced DeFi traders
   - Maximum yield potential
@@ -143,7 +143,7 @@ Automated yield optimization through smart contract compounding:
 - **Automatic Reinvestment**: Rewards automatically reinvested
 - **Gas Optimization**: Batch operations to minimize fees
 - **Professional Management**: Set-and-forget strategy
-- **Share-Based System**: ERC20-like vault shares
+- **Share-based SIP-010-like accounting system
 - **Harvest Functionality**: Manual harvest option available
 
 **Benefits:**
@@ -527,7 +527,7 @@ Seamless connection with Stacks wallets:
 1. **Clone the repository**
 ```bash
 git clone https://github.com/murat48/StackPulseFi.git
-cd YieldFarming
+cd StackPulseFi
 ```
 
 2. **Install Frontend Dependencies**
