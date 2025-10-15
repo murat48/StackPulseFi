@@ -111,17 +111,17 @@ StackPulseFi bridges the gap between traditional Bitcoin holdings and decentrali
 
 Multi-tier staking system with different risk profiles:
 
-- **Conservative Pool** (5% APR, 7-day lock)
+- **Conservative Pool** (5% APR)
   - Low risk, steady returns
   - Perfect for risk-averse investors
   - Minimal volatility exposure
 
-- **Moderate Pool** (8% APR, 14-day lock)
+- **Moderate Pool** (7% APR)
   - Balanced risk/reward ratio
   - Suitable for average DeFi users
   - Moderate growth potential
 
-- **Aggressive Pool** (15% APR, 30-day lock)
+- **Aggressive Pool** (12% APR)
   - High risk, high reward
   - For experienced DeFi traders
   - Maximum yield potential
