@@ -90,11 +90,13 @@ StackPulseFi bridges the gap between traditional Bitcoin holdings and decentrali
 - Automated portfolio rebalancing
 
 
-### AI-Powered Insights
+### AI-Powered Protocol Analysis
 
-- Personalized DeFi strategy recommendations
-- Protocol performance comparisons
-- Risk assessment tools
+- Real-time data from 80+ DeFi protocols
+- Live market metrics (TVL, APY, Volume)
+- Advanced risk assessment with 5-factor analysis
+- Interactive ROI calculator with live protocol data
+- AI-driven investment recommendations
 
 
 ### Long-Term Savings
@@ -174,22 +176,234 @@ Long-term savings products for financial goals:
 - 📊 Progress tracking
 - 💎 Guaranteed yields
 
-### 4. AI DeFi Advisor 🤖
+### 4. AI DeFi Advisor Dashboard 🤖
 
-Intelligent investment recommendations powered by OpenAI:
+**Advanced AI-powered investment advisory platform with comprehensive analytics and intelligent recommendations.**
 
-- **Portfolio Analysis**: Analyze your current DeFi positions
-- **Risk Assessment**: AI-powered risk scoring
-- **Strategy Recommendations**: Personalized investment strategies
-- **Protocol Comparisons**: Compare different DeFi protocols
-- **Market Insights**: Real-time market analysis
+#### 🌐 Protocol Discovery & Selection
 
-**Capabilities:**
-- 💡 Natural language queries
-- 📊 Data-driven recommendations
-- 🎯 Risk-adjusted strategies
+**Browse and analyze 80+ DeFi protocols with live market data:**
+
+- **Multi-Chain Coverage**: Ethereum, Stacks, BSC, Polygon, Arbitrum, and more
+- **Real-time Market Data**: 
+  - Live TVL (e.g., $8,156.70M for Binance)
+  - Current APY rates (e.g., 2.00% for CEX platforms)
+  - 24h trading volume and liquidity depth
+  - Protocol type classification (CEX, DEX, Lending, Staking, Liquid Staking)
+- **Smart Search**: Find protocols by name, token symbol, or category
+- **Advanced Filtering**: Filter by protocol type, chain, or risk level
+- **Sorting Options**: Sort by TVL, APY, liquidity, volume, or risk score
+- **Comparison Mode**: Select multiple protocols for side-by-side analysis
+
+#### 📊 Historical Performance Analytics
+
+**Interactive charts powered by Recharts with real-time protocol data:**
+
+- **TVL Trend Analysis** (7d/30d/90d timeframes)
+  - Historical total value locked tracking
+  - Growth pattern identification
+  - Protocol maturity assessment
+  - Comparative performance across periods
+
+- **APR/APY Evolution Charts**
+  - Yield rate fluctuation monitoring
+  - High-yield opportunity detection
+  - Rate stability analysis
+  - Historical yield comparison
+
+- **Volume Tracking Dashboard**
+  - 24-hour trading volume metrics
+  - Volume trend analysis over time
+  - Liquidity depth visualization
+  - Market activity indicators
+
+- **Visual Metrics Display**
+  - Circular progress indicators showing TVL, Volume, and Liquidity percentages
+  - Color-coded performance indicators (green/yellow/red)
+  - Real-time data synchronization from backend API
+  - Responsive charts for all screen sizes
+
+#### 🛡️ Multi-Factor Risk Analysis
+
+**Comprehensive risk assessment with 5 key risk factors:**
+
+1. **Liquidity Risk** (Purple)
+   - Evaluates withdrawal capacity
+   - Pool depth analysis
+   - Slippage risk assessment
+
+2. **Stability Risk** (Orange)
+   - Protocol maturity evaluation
+   - Bug history tracking
+   - Code quality indicators
+
+3. **Market Risk** (Red)
+   - Volatility measurements
+   - Market correlation analysis
+   - Impermanent loss estimation
+
+4. **Smart Contract Risk** (Green)
+   - Audit status verification
+   - Security score calculation
+   - Vulnerability assessment
+
+5. **Regulatory Risk** (Blue)
+   - Compliance status
+   - Geographic restrictions
+   - Legal framework analysis
+
+**Risk Scoring System:**
+- Low Risk: 0-30 (Green) - Safe for conservative investors
+- Medium Risk: 31-70 (Yellow) - Balanced risk/reward
+- High Risk: 71-100 (Red) - Aggressive strategies only
+
+#### 🧮 Smart Investment Calculator
+
+**Real-time DeFi protocol return calculator powered by live market data.**
+
+**Protocol Selection:**
+- Choose from 80+ protocols via "Select Protocol for Analysis" dropdown
+- Automatically loads real-time data:
+  - **TVL** (Total Value Locked) - e.g., $8,156.70M
+  - **APY** (Annual Percentage Yield) - e.g., 2.00%
+  - **Protocol Type** - CEX, DEX, Lending, Staking, etc.
+  - **Volume & Liquidity** metrics
+
+**Three Specialized Calculation Modes:**
+
+##### 1. Investment Pools Mode 💰
+**Risk-tiered calculator using selected protocol's APY:**
+- Conservative Pool - Uses selected protocol's APY with low-risk parameters
+- Moderate Pool - Uses selected protocol's APY with balanced parameters
+- Aggressive Pool - Uses selected protocol's APY with high-risk parameters
+- **Data Source**: APY pulled from selected protocol (e.g., Binance 2.00%)
+- Custom amount and duration inputs (1-365 days)
+- Simple vs. Compound interest calculation methods
+- Daily, Weekly, or Monthly compounding frequency options
+- **How it works**: Select a protocol first, then calculator applies its live APY to different risk tiers
+
+##### 2. Liquidity Pools Mode 💧
+**Liquidity provision calculator using selected protocol's data:**
+- sBTC/STX pair - Uses selected protocol's APY and liquidity metrics
+- sBTC/USDA pair - Calculates based on protocol's current rates
+- Impermanent loss estimation based on protocol volatility
+- Fee APR calculations from selected protocol
+- LP token value projections using live market data
+- **Data Source**: APY, liquidity, and fee data from selected protocol
+- **How it works**: Select a protocol, then analyze LP returns for Stacks token pairs
+
+##### 3. Protocol Analysis Mode 🔍
+**Live market-data driven calculator:**
+- Select any protocol from dropdown (Binance, Curve, Aave, etc.)
+- Uses **real APY** from selected protocol (e.g., 2.00%)
+- Uses **real TVL** data (e.g., $8,156.70M)
+- Flexible duration settings (1-365 days)
+- Compound frequency selection
+- Real-time ROI calculations based on actual protocol metrics
+- Value projection charts with live data
+- **Note**: Calculations based on current market conditions
+
+**Calculator Features:**
+- **Simple vs Compound Toggle**: Compare interest calculation methods
+- **Interactive Sliders**: Easy amount and duration adjustments
+- **Visual Projections**: 90-day value growth charts
+- **Multiple Timeframes**: Daily, weekly, or monthly compounding
+- **Detailed Breakdown**: Principal, earnings, and total value display
+
+#### 🤖 Integrated AI Assistant
+
+**Two AI Interaction Modes:**
+
+##### Protocol-Specific AI Chat 💬
+- Ask questions about any selected protocol
+- Get detailed yield optimization strategies
+- Understand risk factors and mitigation
+- Compare with similar protocols
+- Receive personalized recommendations
+
+##### Global AI Assistant 🌟
+- Compare multiple protocols simultaneously
+- Ask general DeFi strategy questions
+- Get market insights and trends
+- Portfolio diversification advice
+- Risk-adjusted allocation suggestions
+
+**AI Capabilities:**
+- 💡 Natural language processing
+- 📊 Data-driven insights
+- 🎯 Contextual recommendations
 - 🔍 Deep protocol analysis
-- 📈 Yield optimization suggestions
+- 📈 Yield optimization strategies
+- 🛡️ Risk assessment explanations
+
+**Chat Features:**
+- Persistent chat history
+- Timestamp tracking
+- Clear conversation option
+- Response caching
+- Context-aware answers
+
+#### 🎯 Smart Router Mode (Beta)
+
+**Intelligent Portfolio Allocation System:**
+
+- **Risk Tolerance Selection**: Low, Medium, or High
+- **Amount-Based Optimization**: Allocate any amount optimally
+- **Multi-Protocol Distribution**: Spread risk across top protocols
+- **APY-Weighted Allocation**: Maximize returns based on yields
+- **Visual Allocation Charts**: Pie charts showing distribution
+- **Expected Return Calculations**: Projected earnings from allocation
+
+**Router Algorithm:**
+- Analyzes risk scores of all protocols
+- Filters by user's risk tolerance
+- Allocates based on APY optimization
+- Considers liquidity and stability
+- Provides actionable allocation percentages
+
+#### 🔥 Popular Tokens Display
+
+Track trending DeFi tokens:
+- STX (Stacks)
+- sBTC (Synthetic Bitcoin)
+- ALEX, USDA, and more
+- Real-time price indicators
+- Token logo display
+- Chain indicators
+
+#### 🎨 User Experience Features
+
+- **Responsive Design**: Mobile-first interface
+- **Dark Mode Compatible**: Modern gradient backgrounds
+- **Smooth Animations**: Hover effects and transitions
+- **Loading States**: Skeleton loaders and spinners
+- **Error Handling**: Graceful fallbacks and error messages
+- **Wallet Integration**: Connect to view personalized data
+
+#### 🔗 External Links & Resources
+
+- Direct links to protocol websites
+- Audit report access
+- Documentation links
+- Community resources
+- Transaction explorers
+
+**Perfect For:**
+- 🎓 DeFi beginners learning the ecosystem
+- � Experienced traders optimizing yields
+- 🔍 Researchers analyzing protocols
+- 📊 Portfolio managers tracking performance
+- 🤖 AI enthusiasts exploring blockchain analytics
+
+**Technology Stack:**
+- **AI Engine**: OpenAI GPT-3.5-turbo for protocol analysis and recommendations
+- **Data Visualization**: Recharts library for TVL/APY/Volume charts
+- **Real-time Data**: Backend API integration (https://stackpulsefi-api-latest.onrender.com)
+- **Protocol Data**: 80+ DeFi protocols with live market metrics
+- **Type Safety**: Full TypeScript implementation
+- **Responsive UI**: Mobile-first React components with Tailwind CSS
+- **State Management**: React hooks for real-time data updates
+- **Chart Timeframes**: 7-day, 30-day, and 90-day historical data
 
 ### 5. Wallet Integration 👛
 
@@ -763,11 +977,18 @@ clarinet console
    - Guardian (education only)
 5. Confirm transaction
 
-#### 6. Use AI Advisor
-1. Click "Ask AI About This Pool" on any pool
-2. Type your question
-3. Or select quick question
-4. Get AI-powered recommendations
+#### 6. Use AI Advisor Dashboard
+1. Navigate to "/advisor" page from main menu
+2. Browse 80+ DeFi protocols with live data
+3. Select a protocol from "Select Protocol for Analysis" dropdown
+4. View real-time TVL, APY, and Volume charts (7d/30d/90d)
+5. Analyze 5-factor risk assessment (Liquidity, Stability, Market, Smart Contract, Regulatory)
+6. Use Smart Calculator:
+   - **Investment Pools Mode**: Compare hypothetical pool returns
+   - **Liquidity Pools Mode**: Analyze sBTC/STX or sBTC/USDA pairs
+   - **Protocol Analysis Mode**: Calculate returns using selected protocol's live APY
+7. Ask AI questions about selected protocol or use Global AI Assistant
+8. Enable Router Mode for optimal portfolio allocation across protocols
 
 ### For Developers
 
