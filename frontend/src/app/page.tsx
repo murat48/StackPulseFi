@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { TrendingUp, Shield, Vault, DollarSign, Zap, Sparkles, Clock, Users, Coins } from 'lucide-react';
 import Link from 'next/link';
 import WalletConnect from '@/components/WalletConnect';
@@ -290,6 +290,18 @@ export default function Home() {
   const [totalSupply, setTotalSupply] = useState('0');
   const [isClient, setIsClient] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0); // Add refresh key for pool data
+  const [isInitializing, setIsInitializing] = useState(true); // Global loading state
+
+  // Loading states for each tab
+  const [poolsLoaded, setPoolsLoaded] = useState(false);
+  const [vaultsLoaded, setVaultsLoaded] = useState(false);
+  const [futureFundsLoaded, setFutureFundsLoaded] = useState(false);
+  const [isPoolsLoading, setIsPoolsLoading] = useState(false);
+  const [isVaultsLoading, setIsVaultsLoading] = useState(false);
+  const [isFutureFundsLoading, setIsFutureFundsLoading] = useState(false);
+
+  // Use ref to track loading state to avoid stale closure in useCallback
+  const isFutureFundsLoadingRef = useRef(false);
 
   // Modal states
   const [depositModal, setDepositModal] = useState({ isOpen: false, poolId: null as number | null, type: 'pool' as 'pool' | 'vault' | 'retirement' | 'education' });
@@ -315,12 +327,12 @@ export default function Home() {
     }
   }, [isClient, userAddress]);
 
-  // Fetch pool and vault data
-  const fetchData = async () => {
+  // Fetch initial counts only (lightweight)
+  const fetchInitialData = async () => {
     if (!isClient) return;
 
     try {
-      // Fetch pool and vault counts (with fallback)
+      // Fetch only counts for initial load (fast)
       try {
         const pools = await stacksApi.getPoolCount();
         setPoolCount(Number(pools));
@@ -337,33 +349,6 @@ export default function Home() {
         setVaultCount(0);
       }
 
-      // Fetch user's FutureFunds (only if logged in)
-      if (userAddress) {
-        console.log('[Page] Fetching FutureFunds for user:', userAddress);
-        try {
-          const retirementFunds = await stacksApi.getUserRetirementFunds(userAddress);
-          console.log('[Page] Retirement funds received:', retirementFunds);
-          setUserRetirementFunds(retirementFunds);
-
-          const educationFunds = await stacksApi.getCreatorEducationFunds(userAddress);
-          console.log('[Page] Education funds received:', educationFunds);
-          setUserEducationFunds(educationFunds);
-
-          // Calculate total FutureFund count
-          setFutureFundCount(retirementFunds.length + educationFunds.length);
-        } catch (error) {
-          console.warn('Error fetching user funds:', error);
-          setUserRetirementFunds([]);
-          setUserEducationFunds([]);
-          setFutureFundCount(0);
-        }
-      } else {
-        console.log('[Page] No user address, clearing FutureFunds');
-        setUserRetirementFunds([]);
-        setUserEducationFunds([]);
-        setFutureFundCount(0);
-      }
-
       // Fetch total supply (with fallback)
       try {
         const supply = await stacksApi.getSBTCTotalSupply();
@@ -374,13 +359,152 @@ export default function Home() {
       }
 
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching initial data:', error);
     }
   };
 
+  // Full refresh function (for after transactions)
+  const fetchData = async () => {
+    await fetchInitialData();
+    // Reset loaded states to force refresh on next tab visit
+    setPoolsLoaded(false);
+    setVaultsLoaded(false);
+    setFutureFundsLoaded(false);
+  };
+
   useEffect(() => {
-    fetchData();
-  }, [userAddress, isClient]);
+    const initializeApp = async () => {
+      setIsInitializing(true);
+      await fetchInitialData();
+
+      // If user is already connected, fetch FutureFund count for hero section
+      if (userAddress) {
+        try {
+          const [retirementCount, educationCount] = await Promise.all([
+            stacksApi.getUserRetirementFundCount(userAddress),
+            stacksApi.getCreatorEducationFundCount(userAddress)
+          ]);
+          const totalCount = retirementCount + educationCount;
+          console.log('[Page] 🎯 Initial FutureFund count:', totalCount);
+          setFutureFundCount(totalCount);
+        } catch (error) {
+          console.warn('[Page] Could not fetch initial FutureFund count:', error);
+          setFutureFundCount(0);
+        }
+      }
+
+      setIsInitializing(false);
+    };
+
+    if (isClient) {
+      initializeApp();
+    }
+  }, [isClient, userAddress]);  // Auto-load tab data when tab becomes active
+  useEffect(() => {
+    if (!isClient) return;
+
+    if (activeTab === 'pools' && !poolsLoaded && !isPoolsLoading) {
+      setIsPoolsLoading(true);
+      // Simulate loading for smooth UX (PoolCard fetches its own data)
+      setTimeout(() => {
+        setPoolsLoaded(true);
+        setIsPoolsLoading(false);
+      }, 500);
+    }
+
+    if (activeTab === 'vaults' && !vaultsLoaded && !isVaultsLoading) {
+      setIsVaultsLoading(true);
+      // Simulate loading for smooth UX (VaultCard fetches its own data)
+      setTimeout(() => {
+        setVaultsLoaded(true);
+        setIsVaultsLoading(false);
+      }, 500);
+    }
+  }, [isClient, activeTab, poolsLoaded, vaultsLoaded, isPoolsLoading, isVaultsLoading]);
+
+  // Fetch FutureFunds only when the tab is active and data hasn't been loaded yet
+  const fetchFutureFunds = useCallback(async () => {
+    console.log('[Page] 📊 fetchFutureFunds called');
+    console.log('[Page] 🔍 isClient:', isClient);
+    console.log('[Page] 🔍 userAddress:', userAddress);
+    console.log('[Page] 🔍 isFutureFundsLoadingRef:', isFutureFundsLoadingRef.current);
+
+    if (!isClient) {
+      console.log('[Page] ❌ Skipping fetch - not on client');
+      return;
+    }
+
+    if (!userAddress) {
+      console.log('[Page] ❌ Skipping fetch - no user address');
+      return;
+    }
+
+    if (isFutureFundsLoadingRef.current) {
+      console.log('[Page] ❌ Skipping fetch - already loading');
+      return;
+    }
+
+    isFutureFundsLoadingRef.current = true;
+    setIsFutureFundsLoading(true);
+    console.log('[Page] 🚀 Starting FutureFunds fetch for user:', userAddress);
+
+    try {
+      // Fetch sequentially to reduce API load (testnet can be slow with parallel requests)
+      console.log('[Page] 📥 Fetching retirement funds...');
+      const retirementFunds = await stacksApi.getUserRetirementFunds(userAddress);
+      console.log('[Page] ✅ Retirement funds fetched:', retirementFunds.length);
+
+      console.log('[Page] 📥 Fetching education funds...');
+      const educationFunds = await stacksApi.getCreatorEducationFunds(userAddress);
+      console.log('[Page] ✅ Education funds fetched:', educationFunds.length);
+
+      console.log('[Page] ✅ Retirement funds received:', retirementFunds.length, 'funds');
+      console.log('[Page] ✅ Education funds received:', educationFunds.length, 'funds');
+      console.log('[Page] 📋 Retirement fund details:', retirementFunds);
+      console.log('[Page] 📋 Education fund details:', educationFunds);
+
+      const totalCount = retirementFunds.length + educationFunds.length;
+      console.log('[Page] 🎯 Total FutureFunds count:', totalCount);
+
+      setUserRetirementFunds(retirementFunds);
+      setUserEducationFunds(educationFunds);
+      setFutureFundCount(totalCount);
+      setFutureFundsLoaded(true);
+
+      console.log('[Page] ✅ FutureFunds state updated successfully');
+    } catch (error) {
+      console.error('[Page] ❌ Error fetching user funds:', error);
+      setUserRetirementFunds([]);
+      setUserEducationFunds([]);
+      setFutureFundCount(0);
+    } finally {
+      isFutureFundsLoadingRef.current = false;
+      setIsFutureFundsLoading(false);
+      console.log('[Page] 🏁 FutureFunds fetch completed');
+    }
+  }, [isClient, userAddress]);  // Load FutureFunds when tab becomes active
+  useEffect(() => {
+    console.log('[Page] 🎯 FutureFunds useEffect triggered');
+    console.log('[Page] 🔍 activeTab:', activeTab);
+    console.log('[Page] 🔍 userAddress:', userAddress);
+    console.log('[Page] 🔍 futureFundsLoaded:', futureFundsLoaded);
+    console.log('[Page] 🔍 isFutureFundsLoadingRef:', isFutureFundsLoadingRef.current);
+
+    if (activeTab === 'future-funds' && userAddress && !futureFundsLoaded && !isFutureFundsLoadingRef.current) {
+      console.log('[Page] ✅ All conditions met, triggering FutureFunds fetch...');
+      fetchFutureFunds();
+    } else {
+      console.log('[Page] ⏭️ Skipping fetch - conditions not met');
+    }
+  }, [activeTab, userAddress, futureFundsLoaded, fetchFutureFunds]);
+
+  // Reset loaded state when user changes
+  useEffect(() => {
+    setFutureFundsLoaded(false);
+    setUserRetirementFunds([]);
+    setUserEducationFunds([]);
+    setFutureFundCount(0);
+  }, [userAddress]);
 
   const handlePoolDeposit = (poolId: number) => {
     setDepositModal({ isOpen: true, poolId, type: 'pool' });
@@ -683,6 +807,24 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      {/* Global Loading Overlay */}
+      {isInitializing && (
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-900/95 via-purple-900/95 to-slate-900/95 backdrop-blur-sm z-[100] flex items-center justify-center">
+          <div className="text-center">
+            <div className="relative mb-8">
+              <div className="w-24 h-24 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <TrendingUp className="text-purple-400 animate-pulse" size={32} />
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Loading StackPulseFi</h3>
+            <p className="text-white/70">Connecting to Stacks blockchain...</p>
+            <p className="text-white/50 text-sm mt-2">This may take up to 2 minutes</p>
+            <p className="text-white/40 text-xs mt-1">Testnet API can be slow during peak hours</p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="backdrop-blur-xl bg-white/5 border-b border-white/10 sticky top-0 z-50 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -925,7 +1067,20 @@ export default function Home() {
               <p className="text-base sm:text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
                 Choose from different risk profiles to match your investment strategy and maximize your sBTC returns
               </p>
-              {poolCount === 0 && (
+              {!poolsLoaded && isPoolsLoading && (
+                <div className="mt-8 glass rounded-2xl p-8 max-w-4xl mx-auto">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                      <TrendingUp className="text-white animate-spin" size={32} />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">Loading Pools...</h3>
+                    <p className="text-white/80">
+                      Please wait while we fetch staking pool data from the blockchain.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {poolsLoaded && poolCount === 0 && (
                 <div className="mt-8 glass rounded-2xl p-8 max-w-4xl mx-auto">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -1016,7 +1171,20 @@ export default function Home() {
               <p className="text-xl text-white/80 max-w-2xl mx-auto">
                 Set and forget - your rewards are automatically reinvested for maximum yields
               </p>
-              {vaultCount === 0 && (
+              {!vaultsLoaded && isVaultsLoading && (
+                <div className="mt-8 glass rounded-2xl p-8 max-w-4xl mx-auto">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                      <Vault className="text-white animate-spin" size={32} />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">Loading Vaults...</h3>
+                    <p className="text-white/80">
+                      Please wait while we fetch vault data from the blockchain.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {vaultsLoaded && vaultCount === 0 && (
                 <div className="mt-8 glass rounded-2xl p-8 max-w-4xl mx-auto">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -1123,7 +1291,22 @@ export default function Home() {
                 </div>
               )}
 
-              {userAddress && userRetirementFunds.length === 0 && (
+              {userAddress && isFutureFundsLoading && (
+                <div className="glass rounded-2xl p-8 max-w-4xl mx-auto mb-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                      <Clock className="text-white animate-spin" size={32} />
+                    </div>
+                    <h4 className="text-2xl font-bold text-white mb-4">Loading Your Funds...</h4>
+                    <p className="text-white/80 mb-2">
+                      Please wait while we fetch your retirement funds from the blockchain.
+                    </p>
+                    <p className="text-white/50 text-sm">This may take 1-2 minutes on testnet</p>
+                  </div>
+                </div>
+              )}
+
+              {userAddress && !isFutureFundsLoading && userRetirementFunds.length === 0 && (
                 <div className="glass rounded-2xl p-8 max-w-4xl mx-auto mb-6">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -1203,7 +1386,22 @@ export default function Home() {
                 </div>
               )}
 
-              {userAddress && userEducationFunds.length === 0 && (
+              {userAddress && isFutureFundsLoading && (
+                <div className="glass rounded-2xl p-8 max-w-4xl mx-auto mb-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                      <Users className="text-white animate-spin" size={32} />
+                    </div>
+                    <h4 className="text-2xl font-bold text-white mb-4">Loading Your Funds...</h4>
+                    <p className="text-white/80 mb-2">
+                      Please wait while we fetch your education funds from the blockchain.
+                    </p>
+                    <p className="text-white/50 text-sm">This may take 1-2 minutes on testnet</p>
+                  </div>
+                </div>
+              )}
+
+              {userAddress && !isFutureFundsLoading && userEducationFunds.length === 0 && (
                 <div className="glass rounded-2xl p-8 max-w-4xl mx-auto mb-6">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-6">

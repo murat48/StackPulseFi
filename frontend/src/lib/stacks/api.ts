@@ -22,10 +22,12 @@ interface CacheEntry<T> {
 // API client for reading contract data
 class StacksApi {
   private baseUrl: string;
-  private maxRetries: number = 3;
-  private retryDelay: number = 1000; // Start with 1 second
+  private maxRetries: number = 5; // Increased from 3 to 5
+  private retryDelay: number = 3000; // Start with 3 seconds (increased from 2)
+  private timeout: number = 120000; // 120 seconds timeout (increased from 60)
   private cache: Map<string, CacheEntry<any>> = new Map();
-  private cacheTTL: number = 5000; // 5 seconds cache
+  private cacheTTL: number = 30000; // 30 seconds cache (increased from 10)
+  private contractsAvailable: Map<string, boolean> = new Map(); // Track which contracts are available
 
   constructor(baseUrl: string = STACKS_API_URL) {
     this.baseUrl = baseUrl;
@@ -58,11 +60,16 @@ class StacksApi {
     try {
       return await fn();
     } catch (error: any) {
-      if (retries > 0 && (error.name === 'AbortError' || error.message?.includes('fetch'))) {
-        console.log(`Retrying... (${this.maxRetries - retries + 1}/${this.maxRetries})`);
-        await new Promise(resolve => setTimeout(resolve, this.retryDelay * (this.maxRetries - retries + 1)));
+      if (retries > 0 && (error.name === 'AbortError' || error.message?.includes('fetch') || error.message?.includes('Failed to fetch'))) {
+        // Exponential backoff: 3s, 6s, 12s, 24s, 48s
+        const attemptNumber = this.maxRetries - retries + 1;
+        const delay = this.retryDelay * Math.pow(2, attemptNumber - 1);
+        console.log(`⏳ Retrying API call in ${(delay / 1000).toFixed(1)}s... (attempt ${attemptNumber}/${this.maxRetries})`);
+        console.log(`   Error: ${error.message || 'Unknown'}`);
+        await new Promise(resolve => setTimeout(resolve, delay));
         return this.retryWithBackoff(fn, retries - 1);
       }
+      console.error(`❌ All retry attempts exhausted. Final error:`, error.message || error);
       throw error;
     }
   }
@@ -79,6 +86,14 @@ class StacksApi {
       ? contractAddress.split('.')
       : [contractAddress, contractName];
 
+    // Check if we already know this contract is unavailable (but allow retries after some time)
+    const contractKey = `${address}.${name}`;
+    const contractStatus = this.contractsAvailable.get(contractKey);
+    if (contractStatus === false) {
+      // Don't completely block, just log a warning and try anyway
+      console.warn(`⚠️ Contract ${contractKey} was previously unavailable, attempting anyway...`);
+    }
+
     const url = `${this.baseUrl}/v2/contracts/call-read/${address}/${name}/${functionName}`;
 
     const body = {
@@ -88,9 +103,14 @@ class StacksApi {
 
     return this.retryWithBackoff(async () => {
       try {
-        // Increase timeout to 20 seconds
+        console.log(`[API] 📡 Calling ${name}.${functionName}...`);
+        const startTime = Date.now();
+
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        const timeoutId = setTimeout(() => {
+          console.log(`[API] ⏱️ Request timeout (${this.timeout / 1000}s) for ${name}.${functionName}`);
+          controller.abort();
+        }, this.timeout);
 
         const response = await fetch(url, {
           method: 'POST',
@@ -102,10 +122,12 @@ class StacksApi {
         });
 
         clearTimeout(timeoutId);
+        const elapsed = Date.now() - startTime;
+        console.log(`[API] ⚡ Response received in ${elapsed}ms for ${name}.${functionName}`);
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.warn(`API call failed for ${name}.${functionName}: ${response.status} ${response.statusText}`);
+          console.warn(`[API] ❌ Call failed for ${name}.${functionName}: ${response.status} ${response.statusText}`);
           throw new Error(`API call failed: ${response.status} ${response.statusText}. Response: ${errorText}`);
         }
 
@@ -160,15 +182,29 @@ class StacksApi {
             result = cvToJSON(cv);
           }
 
+          // Mark contract as available on successful call
+          const contractKey = `${address}.${name}`;
+          if (this.contractsAvailable.get(contractKey) === false) {
+            console.log(`✅ Contract ${contractKey} is now available`);
+          }
+          this.contractsAvailable.set(contractKey, true);
+
           return result;
         } else {
+          // Mark contract as unavailable if it's not found
+          if (data.cause?.includes('no_such_contract') || data.cause?.includes('not found')) {
+            const contractKey = `${address}.${name}`;
+            this.contractsAvailable.set(contractKey, false);
+            console.warn(`❌ Contract ${contractKey} marked as unavailable`);
+          }
           throw new Error(`Contract call failed: ${data.cause}`);
         }
       } catch (error: any) {
         if (error.name === 'AbortError') {
-          console.error(`API timeout for ${name}.${functionName}:`, url);
+          console.warn(`API timeout for ${name}.${functionName}:`, url);
         } else {
-          console.error(`API error for ${name}.${functionName}:`, error.message || error);
+          console.warn(`API error for ${name}.${functionName}:`, error.message || error);
+          // Don't mark as unavailable for network errors - only for contract not found
         }
         throw error; // Re-throw to trigger retry
       }
@@ -697,30 +733,41 @@ class StacksApi {
         'get-user-fund-count',
         [principalCV(userAddress)]
       );
-      console.log('[API] getUserRetirementFundCount RAW result:', result);
-      console.log('[API] getUserRetirementFundCount result.value:', result?.value);
+      console.log('[API] getUserRetirementFundCount RAW result:', JSON.stringify(result, null, 2));
 
-      // Try different possible paths for the count value
+      // Contract returns a tuple with 'count' field: {count: uint}
       let count = 0;
 
-      if (result?.value !== undefined) {
-        if (typeof result.value === 'number') {
-          count = result.value;
-        } else if (typeof result.value === 'object' && result.value !== null) {
-          console.log('[API] Result.value is object with keys:', Object.keys(result.value));
-          const valueObj = result.value as any;
-          if (valueObj.count !== undefined) {
-            count = typeof valueObj.count === 'number' ? valueObj.count : Number(valueObj.count);
+      if (result?.value !== undefined && result.value !== null) {
+        const val = result.value;
+
+        // First check if it's a tuple/object with count field
+        if (typeof val === 'object' && val !== null && 'count' in val) {
+          const countVal = val.count;
+          if (typeof countVal === 'number') {
+            count = countVal;
+          } else if (typeof countVal === 'string') {
+            count = parseInt(countVal, 10) || 0;
+          } else if (typeof countVal === 'bigint') {
+            count = Number(countVal);
           }
         }
-      } else if (result?.count !== undefined) {
-        count = typeof result.count === 'number' ? result.count : Number(result.count);
+        // Fallback: direct value
+        else if (typeof val === 'number') {
+          count = val;
+        } else if (typeof val === 'string') {
+          count = parseInt(val, 10) || 0;
+        } else if (typeof val === 'bigint') {
+          count = Number(val);
+        } else if (val.type === 'uint' && val.value !== undefined) {
+          count = Number(val.value);
+        }
       }
 
-      console.log('[API] Parsed retirement count:', count);
+      console.log('[API] ✅ Parsed retirement fund count:', count);
       return count;
     } catch (error) {
-      console.error('Error fetching user retirement fund count:', error);
+      console.error('❌ Error fetching user retirement fund count:', error);
       return 0;
     }
   }
@@ -910,30 +957,41 @@ class StacksApi {
         'get-creator-fund-count',
         [principalCV(creatorAddress)]
       );
-      console.log('[API] getCreatorEducationFundCount RAW result:', result);
-      console.log('[API] getCreatorEducationFundCount result.value:', result?.value);
+      console.log('[API] getCreatorEducationFundCount RAW result:', JSON.stringify(result, null, 2));
 
-      // Try different possible paths for the count value
+      // Contract returns a tuple with 'count' field: {count: uint}
       let count = 0;
 
-      if (result?.value !== undefined) {
-        if (typeof result.value === 'number') {
-          count = result.value;
-        } else if (typeof result.value === 'object' && result.value !== null) {
-          console.log('[API] Result.value is object with keys:', Object.keys(result.value));
-          const valueObj = result.value as any;
-          if (valueObj.count !== undefined) {
-            count = typeof valueObj.count === 'number' ? valueObj.count : Number(valueObj.count);
+      if (result?.value !== undefined && result.value !== null) {
+        const val = result.value;
+
+        // First check if it's a tuple/object with count field
+        if (typeof val === 'object' && val !== null && 'count' in val) {
+          const countVal = val.count;
+          if (typeof countVal === 'number') {
+            count = countVal;
+          } else if (typeof countVal === 'string') {
+            count = parseInt(countVal, 10) || 0;
+          } else if (typeof countVal === 'bigint') {
+            count = Number(countVal);
           }
         }
-      } else if (result?.count !== undefined) {
-        count = typeof result.count === 'number' ? result.count : Number(result.count);
+        // Fallback: direct value
+        else if (typeof val === 'number') {
+          count = val;
+        } else if (typeof val === 'string') {
+          count = parseInt(val, 10) || 0;
+        } else if (typeof val === 'bigint') {
+          count = Number(val);
+        } else if (val.type === 'uint' && val.value !== undefined) {
+          count = Number(val.value);
+        }
       }
 
-      console.log('[API] Parsed education count:', count);
+      console.log('[API] ✅ Parsed education fund count:', count);
       return count;
     } catch (error) {
-      console.error('Error fetching creator education fund count:', error);
+      console.error('❌ Error fetching creator education fund count:', error);
       return 0;
     }
   }
