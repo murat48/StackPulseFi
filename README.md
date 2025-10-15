@@ -49,7 +49,7 @@
 
 
 ### 🎯 Problem Statement
-**Despite Bitcoin's dominance, over $1 trillion in BTC remains idle — not participating in yield generation, lending, or savings products. Existing DeFi solutions for Bitcoin are:
+Despite Bitcoin's dominance, over $1 trillion in BTC remains idle — not participating in yield generation, lending, or savings products. Existing DeFi solutions for Bitcoin are:
 
 ❌ Fragmented and complex
 ❌ Lacking intuitive tools for yield generation
@@ -57,7 +57,7 @@
 ❌ Absent long-term, goal-based financial planning
 
 ### 💡 Solution Highlights
-**StackPulseFi bridges the gap between traditional Bitcoin holdings and decentralized finance by offering:
+StackPulseFi bridges the gap between traditional Bitcoin holdings and decentralized finance by offering:
 
 🔹 Simple, risk-profile-based staking
 🔹 Automated yield optimization
@@ -65,18 +65,15 @@
 🔹 AI-driven financial guidance
 
 ### 🛠 Technical Architecture
-**Blockchain Infrastructure
+Blockchain Infrastructure
+Blockchain: Stacks
+Smart Contract Language: Clarity
 
-**Blockchain: Stacks
-**Smart Contract Language: Clarity
-**Key Integrations:
-
-**Bitcoin settlement layer
-**sBTC for BTC-backed DeFi
-**Stacks.js
-**Leather Wallet
-
-
+**Key Integrations:**
+Bitcoin settlement layer
+sBTC for BTC-backed DeFi
+Stacks.js
+Leather Wallet
 
 ### Technical Stack
 
