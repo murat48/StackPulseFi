@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: yieldfarm-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MONGODB_URI=${MONGODB_URI}
+      - STACKS_API_URL=https://api.mainnet.hiro.so
+    restart: unless-stopped
+    networks:
+      - yieldfarm-network
+
+  frontend:
+    build: ./frontend
+    container_name: yieldfarm-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_STACKS_NETWORK=mainnet
+      - NEXT_PUBLIC_API_URL=http://backend:3001
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - yieldfarm-network
+
+networks:
+  yieldfarm-network:
+    driver: bridge

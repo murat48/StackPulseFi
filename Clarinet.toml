@@ -1,0 +1,56 @@
+[project]
+name = "sbtc-yield-farming"
+description = "A production-ready decentralized yield farming platform built on the Stacks blockchain"
+authors = ["Murat Keskin"]
+telemetry = false
+cache_dir = "./.cache"
+
+[contracts.sip-trait-alphavss]
+path = "contracts/sip-010-trait.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sbtc-token-betavss]
+path = "contracts/sbtc-token.clar"
+clarity_version = 2
+epoch = 2.4
+depends_on = ["sip-trait-alphavss"]
+
+[contracts.rewards-distributorvss]
+path = "contracts/rewards-distributor.clar"
+clarity_version = 2
+epoch = 2.4
+depends_on = ["sbtc-token-betavss"]
+
+[contracts.staking-poolvss]
+path = "contracts/staking-pool.clar"
+clarity_version = 2
+epoch = 2.4
+depends_on = ["sbtc-token-betavss", "rewards-distributorvss"]
+
+[contracts.vault-compoundervss]
+path = "contracts/vault-compounder.clar"
+clarity_version = 2
+epoch = 2.4
+depends_on = ["sbtc-token-betavss", "staking-poolvss", "rewards-distributorvss"]
+
+[contracts.defi-registry-zetav1]
+path = "contracts/defi-registry.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.retirement-fundvss]
+path = "contracts/retirement-fund.clar"
+clarity_version = 2
+epoch = 2.4
+depends_on = ["sbtc-token-betavss"]
+
+[contracts.education-fundvss]
+path = "contracts/education-fund.clar"
+clarity_version = 2
+epoch = 2.4
+depends_on = ["sbtc-token-betavss"]
+
+[repl.analysis]
+passes = ["check_checker"]
+check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }

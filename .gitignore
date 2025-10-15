@@ -1,0 +1,76 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Production builds
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Clarinet
+.cache/
+settings/Devnet.toml
+settings/Testnet.toml
+settings/Mainnet.toml
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Private keys (NEVER commit these)
+private-keys/
+*.key
+*.pem
+
+# Deployment artifacts
+deployments/
+deployment-plans/
+
+# Test artifacts
+test-results/
+coverage/
+.vercel
